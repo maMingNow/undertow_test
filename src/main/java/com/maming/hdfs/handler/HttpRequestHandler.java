@@ -20,11 +20,11 @@ public class HttpRequestHandler implements HttpHandler{
         HeaderMap responseHeaders = exchange.getResponseHeaders();
         responseHeaders.put(Headers.CONTENT_TYPE, "text/plain;charset=utf-8");
         
-        String content = "error:uri is error!";
+        String content = "{\"error\":\"uri is error!\"}";
         if (proxy != null) {
             content = proxy.getContent(exchange.getQueryParameters());
             if("".equals(content)){
-            	content = "content is empty!";
+            	content = "{\"error\":\"content is empty!\"}";
             }
         }
         exchange.getResponseSender().send(content);

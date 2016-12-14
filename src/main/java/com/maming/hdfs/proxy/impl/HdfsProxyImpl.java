@@ -2,8 +2,10 @@ package com.maming.hdfs.proxy.impl;
 
 import java.util.Deque;
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.maming.hdfs.proxy.ProxyInterface;
+import com.maming.hdfs.util.JsonUtil;
 import com.maming.hdfs.util.UsingProcessBuilder;
 
 /**
@@ -40,9 +42,22 @@ public class HdfsProxyImpl implements ProxyInterface{
 		String path = params.get("p").peek();
 		System.out.println("path===>"+path);
 		String[] args = {"hadoop","fs","-ls",path};
-		return UsingProcessBuilder.executeCommands(args);
+		return process(UsingProcessBuilder.executeCommands(args));//drwxr-xr-x   - root hdfs          0 2016-06-15 11:11 /log/statistics/dim
 	}
 
+	private String process(String rawString){
+		Map<String,String> recodes = new TreeMap<String,String>();
+		
+		if("".equals(rawString)){
+			recodes.put("error", "content is empty!");
+		}
+		String[] lines = rawString.split("\r\n");
+		for(String line:lines){
+			recodes.put(line.substring(line.lastIndexOf(" ")+1),line);
+		}
+		return JsonUtil.mapToJson(recodes).toString();
+	}
+	
 	@Override
 	public void flush() {
 		
