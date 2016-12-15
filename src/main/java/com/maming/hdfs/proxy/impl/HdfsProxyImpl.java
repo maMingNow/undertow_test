@@ -1,6 +1,8 @@
 package com.maming.hdfs.proxy.impl;
 
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -46,16 +48,19 @@ public class HdfsProxyImpl implements ProxyInterface{
 	}
 
 	private String process(String rawString){
-		Map<String,String> recodes = new TreeMap<String,String>();
-		
+		List<Map<String,String>> list = new ArrayList<Map<String,String>>();
 		if("".equals(rawString)){
+			Map<String,String> recodes = new TreeMap<String,String>();
 			recodes.put("error", "content is empty!");
+			list.add(recodes);
 		}
 		String[] lines = rawString.split("\r\n");
 		for(String line:lines){
+			Map<String,String> recodes = new TreeMap<String,String>();
 			recodes.put(line.substring(line.lastIndexOf(" ")+1),line);
+			list.add(recodes);
 		}
-		return JsonUtil.mapToJson(recodes).toString();
+		return JsonUtil.listToJsonArray(list).toString();
 	}
 	
 	@Override
